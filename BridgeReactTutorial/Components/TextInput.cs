@@ -14,6 +14,7 @@ namespace BridgeReactTutorial.Components
 			{
 				Type = InputType.Text,
 				ClassName = props.ClassName,
+				Disabled = props.Disabled,
 				Value = props.Content,
 				OnChange = e => props.OnChange(e.CurrentTarget.Value)
 			});
@@ -22,6 +23,7 @@ namespace BridgeReactTutorial.Components
 		public class Props
 		{
 			public string ClassName;
+			public bool Disabled;
 			public string Content;
 			public Action<string> OnChange;
 		}
