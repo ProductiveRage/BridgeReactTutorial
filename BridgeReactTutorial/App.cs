@@ -1,16 +1,18 @@
 ﻿using System.Linq;
 using Bridge.Html5;
+using Bridge.React;
+using BridgeReactTutorial.Components;
 
 namespace BridgeReactTutorial
 {
-	public class Class1
+	public class App
 	{
 		[Ready]
 		public static void Go()
 		{
 			var container = Document.GetElementById("main");
 			container.ClassName = string.Join(" ", container.ClassName.Split().Where(c => c != "loading"));
-			container.InnerHTML = "Hello!";
+			React.Render(new AppContainer(), container);
 		}
 	}
 }
