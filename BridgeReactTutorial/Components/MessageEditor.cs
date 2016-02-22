@@ -16,6 +16,7 @@ namespace BridgeReactTutorial.Components
 				new TextInput(new TextInput.Props
 				{
 					ClassName = "title",
+					Disabled = props.Disabled,
 					Content = props.Title,
 					OnChange = newTitle => props.OnChange(new MessageDetails { Title = newTitle, Content = props.Content })
 				}),
@@ -23,9 +24,14 @@ namespace BridgeReactTutorial.Components
 				new TextInput(new TextInput.Props
 				{
 					ClassName = "content",
+					Disabled = props.Disabled,
 					Content = props.Content,
 					OnChange = newContent => props.OnChange(new MessageDetails { Title = props.Title, Content = newContent })
-				})
+				}),
+				DOM.Button(
+					new ButtonAttributes { Disabled = props.Disabled, OnClick = e => props.OnSave() },
+					"Save"
+				)
 			);
 		}
 
@@ -35,6 +41,8 @@ namespace BridgeReactTutorial.Components
 			public string Title;
 			public string Content;
 			public Action<MessageDetails> OnChange;
+			public Action OnSave;
+			public bool Disabled;
 		}
 	}
 }

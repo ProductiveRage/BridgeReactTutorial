@@ -46,6 +46,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\MessageApi.cs" />
+    <Compile Include="API\IReadAndWriteMessages.cs" />
     <Compile Include="App.cs" />
     <Compile Include="Components\AppContainer.cs" />
     <Compile Include="Components\MessageEditor.cs" />
