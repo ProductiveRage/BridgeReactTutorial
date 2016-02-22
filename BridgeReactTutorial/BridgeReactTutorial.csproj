@@ -52,6 +52,7 @@
   <ItemGroup>
     <Content Include="Bridge\output\readme.txt" />
     <Content Include="Bridge\www\demo.html" />
+    <Content Include="Bridge\www\styles.css" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Bridge\bridge.json" />
