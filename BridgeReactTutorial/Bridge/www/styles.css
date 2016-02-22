@@ -10,3 +10,22 @@ del { text-decoration: line-through; }
 table { border-collapse: collapse; border-spacing: 0; }
 
 div#main.loading { color: #f1f1f1; }
+
+body
+{
+    font-family: 'Segoe UI';
+    padding: 8px;
+}
+
+fieldset.message
+{
+    padding: 8px;
+    border: 1px solid #f1f1f1;
+    border-radius: 4px;
+}
+fieldset.message legend
+{
+    color: blue;
+    padding: 0 8px;
+}
+fieldset.message span.label { padding: 0 8px; }
