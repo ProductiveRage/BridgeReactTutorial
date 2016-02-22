@@ -34,3 +34,5 @@ _ReSharper*/
 *.orig
 [Pp]ackages/
 .vs/
+
+*.js # We want the source files only, not the JavaScript that is generated from them
