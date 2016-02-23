@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bridge.Html5;
 using BridgeReactTutorial.ViewModels;
@@ -11,6 +12,12 @@ namespace BridgeReactTutorial.API
 	/// </summary>
 	public class MessageApi : IReadAndWriteMessages
 	{
+		private readonly List<Tuple<int, MessageDetails>> _messages;
+		public MessageApi()
+		{
+			_messages = new List<Tuple<int, MessageDetails>>();
+		}
+
 		public Task SaveMessage(MessageDetails message)
 		{
 			if (message == null)
@@ -22,7 +29,21 @@ namespace BridgeReactTutorial.API
 
 			var task = new Task<object>(null);
 			Window.SetTimeout(
-				() => task.Complete(),
+				() =>
+				{
+					_messages.Add(Tuple.Create(_messages.Count, message));
+					task.Complete();
+				},
+				1000 // Simulate a roundtrip to the server
+			);
+			return task;
+		}
+
+		public Task<IEnumerable<Tuple<int, MessageDetails>>> GetMessages()
+		{
+			var task = new Task<IEnumerable<Tuple<int, MessageDetails>>>(null);
+			Window.SetTimeout(
+				() => task.Complete(_messages),
 				1000 // Simulate a roundtrip to the server
 			);
 			return task;
