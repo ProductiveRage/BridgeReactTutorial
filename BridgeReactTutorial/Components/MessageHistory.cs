@@ -17,7 +17,7 @@ namespace BridgeReactTutorial.Components
 				className = (className + " zero-messages").Trim();
 
 			var messageElements = props.Messages
-				.Select(idAndMessage => DOM.Div(new Attributes { Key = idAndMessage.Item1 },
+				.Select(idAndMessage => DOM.Div(new Attributes { Key = idAndMessage.Item1, ClassName = "historical-message" },
 					DOM.Span(new Attributes { ClassName = "title" }, idAndMessage.Item2.Title),
 					DOM.Span(new Attributes { ClassName = "content" }, idAndMessage.Item2.Content)
 				));
