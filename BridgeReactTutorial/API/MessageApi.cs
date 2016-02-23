@@ -41,9 +41,12 @@ namespace BridgeReactTutorial.API
 
 		public Task<IEnumerable<Tuple<int, MessageDetails>>> GetMessages()
 		{
+			// ToArray is used to return a clone of the message set - otherwise, the caller would end up with a list that is updated when the internal
+			// reference within this class is updated (which sounds convenient but it's not the behaviour that would be exhibited if this was "API"
+			// was really persisting messages to a server somewhere)
 			var task = new Task<IEnumerable<Tuple<int, MessageDetails>>>(null);
 			Window.SetTimeout(
-				() => task.Complete(_messages),
+				() => task.Complete(_messages.ToArray()),
 				1000 // Simulate a roundtrip to the server
 			);
 			return task;
