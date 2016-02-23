@@ -31,6 +31,20 @@ fieldset legend
 }
 
 fieldset.message span.label { padding: 0 8px; }
+fieldset.message span.title, fieldset.message span.content { position: relative; }
+fieldset.message span.title span.validation-message, fieldset.message span.content span.validation-message
+{
+    position: absolute;
+    top: -6px;
+    right: 2px;
+    padding: 2px 4px;
+    font-size: 70%;
+    background: #FFF9D8;
+    border: 1px solid #EFE9CB;
+    border-radius: 2px;
+    color: #A8A390;
+}
+fieldset.message button { margin-left: 8px; }
 
 fieldset.history
 {

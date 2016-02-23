@@ -52,6 +52,7 @@
     <Compile Include="Components\AppContainer.cs" />
     <Compile Include="Components\MessageHistory.cs" />
     <Compile Include="Components\MessageEditor.cs" />
+    <Compile Include="Components\ValidatedTextInput.cs" />
     <Compile Include="Components\TextInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\MessageDetails.cs" />
