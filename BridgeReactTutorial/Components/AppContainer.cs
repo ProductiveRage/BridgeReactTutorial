@@ -21,10 +21,11 @@ namespace BridgeReactTutorial.Components
 				Title = state.Message.Title,
 				Content = state.Message.Content,
 				OnChange = newMessage => SetState(new State { Message = newMessage }),
-				OnSave = () =>
+				OnSave = async () =>
 				{
 					SetState(new State { Message = state.Message, IsSaveInProgress = true });
-					props.MessageApi.SaveMessage(state.Message).ContinueWith(task => SetState(State.GetDefault()));
+					await props.MessageApi.SaveMessage(state.Message);
+					SetState(State.GetDefault());
 				},
 				Disabled = state.IsSaveInProgress
 			});
