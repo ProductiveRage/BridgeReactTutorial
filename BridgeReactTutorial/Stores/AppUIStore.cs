@@ -24,44 +24,38 @@ namespace BridgeReactTutorial.Stores
 
 			dispatcher.Register(message =>
 			{
-				if ((message.Action is StoreInitialised) && (((StoreInitialised)message.Action).Store == this))
-				{
-					// When it's time for a Store to be initialised (to set its initial state and call OnChange to let any interested Components know
-					// that it's ready), a StoreInitialised action will be dispatched that references the Store. In a more complicated app, a router
-					// might choose an initial Store based upon the current URL.
-					OnChange();
-				}
-
-				if (message.Action is MessageEditStateChanged)
-				{
-					var newState = ((MessageEditStateChanged)message.Action).NewState;
-					UpdateValidationFor(newState);
-					NewMessage = newState;
-					OnChange();
-				}
-
-				if (message.Action is MessageSaveRequested)
-				{
-					NewMessage.IsSaveInProgress = true;
-					OnChange();
-					_saveActionRequestId = messageApi.SaveMessage(((MessageSaveRequested)message.Action).Message);
-				}
-
-				if ((message.Action is MessageSaveSucceeded) && (((MessageSaveSucceeded)message.Action).RequestId == _saveActionRequestId))
-				{
-					// The API's SaveMessage function will fire a MessageSaveSucceeded action when (if) the save is successful and then a subsequent
-					// MessageHistoryUpdated action after it's automatically retrieved fresh data, including the newly-saved item (so we need only
-					// reset the form here, a MessageHistoryUpdated should be along shortly containig the new item..) 
-					_saveActionRequestId = null;
-					NewMessage = GetEmptyNewMessage();
-					OnChange();
-				}
-
-				if (message.Action is MessageHistoryUpdated)
-				{
-					MessageHistory = ((MessageHistoryUpdated)message.Action).Messages;
-					OnChange();
-				}
+				message
+					.If<StoreInitialised>(action =>
+					{
+						// When it's time for a Store to be initialised (to set its initial state and call OnChange to let any interested Components know
+						// that it's ready), a StoreInitialised action will be dispatched that references the Store. In a more complicated app, a router
+						// might choose an initial Store based upon the current URL. (We don't need to do anything within this callback, we just need to
+						// match the StoreInitialised so that IfAnyMatched will fire and call OnChange).
+					})
+					.Else<MessageEditStateChanged>(action =>
+					{
+						var newState = action.NewState;
+						UpdateValidationFor(newState);
+						NewMessage = newState;
+					})
+					.Else<MessageSaveRequested>(action =>
+					{
+						NewMessage.IsSaveInProgress = true;
+						_saveActionRequestId = messageApi.SaveMessage(action.Message);
+					})
+					.Else<MessageSaveSucceeded>(
+						condition: action => action.RequestId == _saveActionRequestId,
+						work: action =>
+						{
+							// The API's SaveMessage function will fire a MessageSaveSucceeded action when (if) the save is successful and then a subsequent
+							// MessageHistoryUpdated action after it's automatically retrieved fresh data, including the newly-saved item (so we need only
+							// reset the form here, a MessageHistoryUpdated should be along shortly containig the new item..) 
+							_saveActionRequestId = null;
+							NewMessage = GetEmptyNewMessage();
+						}
+					)
+					.Else<MessageHistoryUpdated>(action => MessageHistory = action.Messages)
+					.IfAnyMatched(OnChange);
 			});
 		}
 
