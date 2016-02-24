@@ -44,7 +44,6 @@
       <HintPath>..\packages\Bridge.React.1.4.3\lib\net40\Bridge.React.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\MessageHistoryUpdated.cs" />
