@@ -10,42 +10,65 @@ namespace BridgeReactTutorial.Components
 
 		public override ReactElement Render()
 		{
-			var formIsInvalid = string.IsNullOrWhiteSpace(props.Title) || string.IsNullOrWhiteSpace(props.Content);
+			var formIsInvalid = 
+				!string.IsNullOrWhiteSpace(props.Message.Title.ValidationError) ||
+				!string.IsNullOrWhiteSpace(props.Message.Content.ValidationError);
+			var isSaveDisabled = formIsInvalid || props.Message.IsSaveInProgress;
 			return DOM.FieldSet(new FieldSetAttributes { ClassName = props.ClassName },
-				DOM.Legend(null, string.IsNullOrWhiteSpace(props.Title) ? "Untitled" : props.Title),
+				DOM.Legend(null, props.Message.Caption),
 				DOM.Span(new Attributes { ClassName = "label" }, "Title"),
 				new ValidatedTextInput(new ValidatedTextInput.Props
 				{
 					ClassName = "title",
-					Disabled = props.Disabled,
-					Content = props.Title,
-					OnChange = newTitle => props.OnChange(new MessageDetails { Title = newTitle, Content = props.Content }),
-					ValidationMessage = string.IsNullOrWhiteSpace(props.Title) ? "Must enter a title" : null
+					Disabled = props.Message.IsSaveInProgress,
+					Content = props.Message.Title.Text,
+					ValidationMessage = props.Message.Title.ValidationError,
+					OnChange = ChangeMessageTitle
 				}),
 				DOM.Span(new Attributes { ClassName = "label" }, "Content"),
 				new ValidatedTextInput(new ValidatedTextInput.Props
 				{
 					ClassName = "content",
-					Disabled = props.Disabled,
-					Content = props.Content,
-					OnChange = newContent => props.OnChange(new MessageDetails { Title = props.Title, Content = newContent }),
-					ValidationMessage = string.IsNullOrWhiteSpace(props.Content) ? "Must enter message content" : null
+					Disabled = props.Message.IsSaveInProgress,
+					Content = props.Message.Content.Text,
+					ValidationMessage = props.Message.Content.ValidationError,
+					OnChange = ChangeMessageContent
 				}),
 				DOM.Button(
-					new ButtonAttributes { Disabled = props.Disabled || formIsInvalid, OnClick = e => props.OnSave() },
+					new ButtonAttributes { Disabled = isSaveDisabled, OnClick = e => props.OnSave() },
 					"Save"
 				)
 			);
 		}
 
+		private void ChangeMessageTitle(string newTitle)
+		{
+			props.OnChange(new MessageEditState
+			{
+				Caption = props.Message.Caption,
+				Title = new TextEditState { Text = newTitle },
+				Content = props.Message.Content,
+				IsSaveInProgress = props.Message.IsSaveInProgress
+			});
+		}
+
+		private void ChangeMessageContent(string newContent)
+		{
+			props.OnChange(new MessageEditState
+			{
+				Caption = props.Message.Caption,
+				Title = props.Message.Title,
+				Content = new TextEditState { Text = newContent },
+				IsSaveInProgress = props.Message.IsSaveInProgress
+			});
+		}
+
 		public class Props
 		{
 			public string ClassName;
-			public string Title;
-			public string Content;
-			public Action<MessageDetails> OnChange;
+			public MessageEditState Message;
+			public Action<MessageEditState> OnChange;
 			public Action OnSave;
-			public bool Disabled;
 		}
 	}
 }

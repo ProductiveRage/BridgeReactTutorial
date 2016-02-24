@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Bridge;
 using Bridge.Html5;
-using BridgeReactTutorial.ViewModels;
+using Bridge.React;
+using BridgeReactTutorial.Actions;
 
 namespace BridgeReactTutorial.API
 {
@@ -13,9 +13,14 @@ namespace BridgeReactTutorial.API
 	/// </summary>
 	public class MessageApi : IReadAndWriteMessages
 	{
+		private readonly AppDispatcher _dispatcher;
 		private readonly List<Tuple<int, MessageDetails>> _messages;
-		public MessageApi()
+		public MessageApi(AppDispatcher dispatcher)
 		{
+			if (dispatcher == null)
+				throw new ArgumentNullException("dispatcher");
+
+			_dispatcher = dispatcher;
 			_messages = new List<Tuple<int, MessageDetails>>();
 
 			// To further mimic a server-based API (where other people may be recording messages of their own), after a 10s delay a periodic task will be
@@ -26,7 +31,12 @@ namespace BridgeReactTutorial.API
 			);
 		}
 
-		public Task SaveMessage(MessageDetails message)
+		/// <summary>
+		/// A MessageSaveSucceeded action will be dispatched when this succeeds, the action's RequestId will match that returned here - after
+		/// this, the API wrapper will automatically trigger a re-load and a MessageHistoryUpdated action will be dispatched once the new,
+		/// expanded set of messages is available
+		/// </summary>
+		public RequestId SaveMessage(MessageDetails message)
 		{
 			if (message == null)
 				throw new ArgumentNullException("message");
@@ -35,29 +45,45 @@ namespace BridgeReactTutorial.API
 			if (string.IsNullOrWhiteSpace(message.Content))
 				throw new ArgumentException("The message must have a non-null-or-whitespace-only Content value");
 
-			var task = new Task<object>(null);
-			Window.SetTimeout(
+			var requestId = new RequestId();
+			Window.SetTimeout( // Use SetTimeout to simulate a roundtrip to the server
 				() =>
 				{
 					_messages.Add(Tuple.Create(_messages.Count, message));
-					task.Complete();
+					_dispatcher.HandleServerAction(
+						new MessageSaveSucceeded { RequestId = requestId }
+					);
+					Window.SetTimeout(
+						() => DispatchHistoryUpdatedAction(requestId),
+						500
+					);
 				},
-				1000 // Simulate a roundtrip to the server
+				1000 
 			);
-			return task;
+			return requestId;
 		}
 
-		public Task<IEnumerable<Tuple<int, MessageDetails>>> GetMessages()
+		/// <summary>
+		/// A MessageHistoryUpdated action will be dispatched when this succeeds, the action's RequestId will match that returned here
+		/// </summary>
+		public RequestId GetMessages()
+		{
+			var requestId = new RequestId();
+			Window.SetTimeout( // Use SetTimeout to simulate a roundtrip to the server
+				() => DispatchHistoryUpdatedAction(requestId),
+				1000
+			);
+			return requestId;
+		}
+
+		private void DispatchHistoryUpdatedAction(RequestId requestId)
 		{
 			// ToArray is used to return a clone of the message set - otherwise, the caller would end up with a list that is updated when the internal
 			// reference within this class is updated (which sounds convenient but it's not the behaviour that would be exhibited if this was "API"
 			// was really persisting messages to a server somewhere)
-			var task = new Task<IEnumerable<Tuple<int, MessageDetails>>>(null);
-			Window.SetTimeout(
-				() => task.Complete(_messages.ToArray()),
-				1000 // Simulate a roundtrip to the server
+			_dispatcher.HandleServerAction(
+				new MessageHistoryUpdated { RequestId = requestId, Messages = _messages.ToArray() }
 			);
-			return task;
 		}
 
 		private void GetChuckNorrisFact()
@@ -78,7 +104,8 @@ namespace BridgeReactTutorial.API
 						{
 							// The Chuck Norris Facts API (http://www.icndb.com/api/) returns strings html-encoded, so they need decoding before
 							// be wrapped up in a MessageDetails instance
-							SaveMessage(new MessageDetails { Title = "Fact", Content = HtmlDecode(apiResponse.Value.Joke) });
+							_messages.Add(Tuple.Create(_messages.Count, new MessageDetails { Title = "Fact", Content = HtmlDecode(apiResponse.Value.Joke) }));
+							DispatchHistoryUpdatedAction(new RequestId());
 							return;
 						}
 					}
@@ -87,7 +114,8 @@ namespace BridgeReactTutorial.API
 						// Ignore any error and drop through to the fallback message-generator below
 					}
 				}
-				SaveMessage(new MessageDetails { Title = "Fact", Content = "API call failed when polling for server content :(" });
+				_messages.Add(Tuple.Create(_messages.Count, new MessageDetails { Title = "Fact", Content = "API call failed when polling for server content :(" }));
+				DispatchHistoryUpdatedAction(new RequestId());
 			};
 			request.Open("GET", "http://api.icndb.com/jokes/random");
 			request.Send();

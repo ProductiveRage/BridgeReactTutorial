@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bridge.React;
+using BridgeReactTutorial.API;
 using BridgeReactTutorial.ViewModels;
 
 namespace BridgeReactTutorial.Components

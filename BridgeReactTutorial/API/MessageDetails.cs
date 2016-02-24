@@ -1,4 +1,4 @@
-﻿namespace BridgeReactTutorial.ViewModels
+﻿namespace BridgeReactTutorial.API
 {
 	public class MessageDetails
 	{
