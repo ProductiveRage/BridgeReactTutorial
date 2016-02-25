@@ -43,7 +43,7 @@ namespace BridgeReactTutorial.Components
 				{
 					ClassName = "message",
 					Message = state.NewMessage,
-					OnChange = newState => props.Dispatcher.HandleViewAction(new MessageEditStateChanged { NewState = newState }),
+					OnChange = newState => props.Dispatcher.HandleViewAction(new MessageEditStateChanged(newState)),
 					OnSave = () =>
 					{
 						// No validation is required here since the MessageEditor shouldn't let OnSave be called if the current message state is invalid
@@ -51,13 +51,12 @@ namespace BridgeReactTutorial.Components
 						// until a save request is attempted (in which case some additional validation WOULD be performed here), but this app keeps
 						// things simpler by showing validation messages for all inputs until they have acceptable values (meaning that the first
 						// time the form is draw, it has validation messages displayed even though the user hasn't interacted with it yet).
-						props.Dispatcher.HandleViewAction(new MessageSaveRequested
-						{
-							Message = new MessageDetails(
+						props.Dispatcher.HandleViewAction(new MessageSaveRequested(
+							new MessageDetails(
 								new NonBlankTrimmedString(state.NewMessage.Title.Text),
 								new NonBlankTrimmedString(state.NewMessage.Content.Text)
 							)
-						});
+						));
 					}
 				}),
 				new MessageHistory(new MessageHistory.Props { ClassName = "history", Messages = state.MessageHistory })

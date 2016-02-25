@@ -1,4 +1,5 @@
-﻿using Bridge.React;
+﻿using System;
+using Bridge.React;
 
 namespace BridgeReactTutorial.Actions
 {
@@ -8,6 +9,17 @@ namespace BridgeReactTutorial.Actions
 	/// </summary>
 	public class StoreInitialised : IDispatcherAction
 	{
-		public object Store;
+		public StoreInitialised(object store)
+		{
+			if (store == null)
+				throw new ArgumentNullException("store");
+
+			Store = store;
+		}
+
+		/// <summary>
+		/// This will never be null
+		/// </summary>
+		public object Store { get; private set; }
 	}
 }
