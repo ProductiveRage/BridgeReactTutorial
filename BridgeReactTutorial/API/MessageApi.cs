@@ -46,9 +46,7 @@ namespace BridgeReactTutorial.API
 				() =>
 				{
 					_messages.Add(Tuple.Create(_messages.Count, message));
-					_dispatcher.HandleServerAction(
-						new MessageSaveSucceeded { RequestId = requestId }
-					);
+					_dispatcher.HandleServerAction(new MessageSaveSucceeded(requestId));
 					Window.SetTimeout(
 						() => DispatchHistoryUpdatedAction(requestId),
 						500
@@ -77,9 +75,7 @@ namespace BridgeReactTutorial.API
 			// ToArray is used to return a clone of the message set - otherwise, the caller would end up with a list that is updated when the internal
 			// reference within this class is updated (which sounds convenient but it's not the behaviour that would be exhibited if this was "API"
 			// was really persisting messages to a server somewhere)
-			_dispatcher.HandleServerAction(
-				new MessageHistoryUpdated { RequestId = requestId, Messages = _messages.ToArray() }
-			);
+			_dispatcher.HandleServerAction(new MessageHistoryUpdated(requestId, _messages.ToArray()));
 		}
 
 		private void GetChuckNorrisFact()
