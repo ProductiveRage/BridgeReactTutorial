@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Bridge.React;
+﻿using Bridge.React;
 using BridgeReactTutorial.Actions;
 using BridgeReactTutorial.API;
 using BridgeReactTutorial.Stores;
 using BridgeReactTutorial.ViewModels;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Components
 {
@@ -72,7 +71,7 @@ namespace BridgeReactTutorial.Components
 		public class State
 		{
 			public MessageEditState NewMessage;
-			public IEnumerable<Tuple<int, MessageDetails>> MessageHistory;
+			public Set<SavedMessageDetails> MessageHistory;
 		}
 	}
 }

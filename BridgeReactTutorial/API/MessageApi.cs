@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using Bridge;
 using Bridge.Html5;
 using Bridge.React;
 using BridgeReactTutorial.Actions;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.API
 {
@@ -14,14 +14,14 @@ namespace BridgeReactTutorial.API
 	public class MessageApi : IReadAndWriteMessages
 	{
 		private readonly AppDispatcher _dispatcher;
-		private readonly List<Tuple<int, MessageDetails>> _messages;
+		private Set<SavedMessageDetails> _messages;
 		public MessageApi(AppDispatcher dispatcher)
 		{
 			if (dispatcher == null)
 				throw new ArgumentNullException("dispatcher");
 
 			_dispatcher = dispatcher;
-			_messages = new List<Tuple<int, MessageDetails>>();
+			_messages = Set<SavedMessageDetails>.Empty;
 
 			// To further mimic a server-based API (where other people may be recording messages of their own), after a 10s delay a periodic task will be
 			// executed to retrieve a new message
@@ -45,7 +45,7 @@ namespace BridgeReactTutorial.API
 			Window.SetTimeout( // Use SetTimeout to simulate a roundtrip to the server
 				() =>
 				{
-					_messages.Add(Tuple.Create(_messages.Count, message));
+					_messages = _messages.Add(new SavedMessageDetails(_messages.Count, message));
 					_dispatcher.HandleServerAction(new MessageSaveSucceeded(requestId));
 					Window.SetTimeout(
 						() => DispatchHistoryUpdatedAction(requestId),
@@ -75,7 +75,7 @@ namespace BridgeReactTutorial.API
 			// ToArray is used to return a clone of the message set - otherwise, the caller would end up with a list that is updated when the internal
 			// reference within this class is updated (which sounds convenient but it's not the behaviour that would be exhibited if this was "API"
 			// was really persisting messages to a server somewhere)
-			_dispatcher.HandleServerAction(new MessageHistoryUpdated(requestId, _messages.ToArray()));
+			_dispatcher.HandleServerAction(new MessageHistoryUpdated(requestId, _messages));
 		}
 
 		private void GetChuckNorrisFact()
@@ -96,7 +96,7 @@ namespace BridgeReactTutorial.API
 						{
 							// The Chuck Norris Facts API (http://www.icndb.com/api/) returns strings html-encoded, so they need decoding before
 							// be wrapped up in a MessageDetails instance
-							_messages.Add(Tuple.Create(_messages.Count, new MessageDetails(
+							_messages = _messages.Add(new SavedMessageDetails(_messages.Count, new MessageDetails(
 								title: new NonBlankTrimmedString("Fact"),
 								content: new NonBlankTrimmedString(HtmlDecode(apiResponse.Value.Joke))
 							)));
@@ -109,7 +109,7 @@ namespace BridgeReactTutorial.API
 						// Ignore any error and drop through to the fallback message-generator below
 					}
 				}
-				_messages.Add(Tuple.Create(_messages.Count, new MessageDetails(
+				_messages = _messages.Add(new SavedMessageDetails(_messages.Count, new MessageDetails(
 					title: new NonBlankTrimmedString("Fact"),
 					content: new NonBlankTrimmedString("API call failed when polling for server content :(")
 				)));

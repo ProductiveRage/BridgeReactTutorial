@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using Bridge.React;
 using BridgeReactTutorial.Actions;
 using BridgeReactTutorial.API;
 using BridgeReactTutorial.ViewModels;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Stores
 {
@@ -18,7 +18,7 @@ namespace BridgeReactTutorial.Stores
 				throw new ArgumentNullException("messageApi");
 
 			NewMessage = GetEmptyNewMessage();
-			MessageHistory = new Tuple<int, MessageDetails>[0];
+			MessageHistory = Set<SavedMessageDetails>.Empty;
 
 			_saveActionRequestId = null;
 
@@ -60,7 +60,7 @@ namespace BridgeReactTutorial.Stores
 		}
 
 		public MessageEditState NewMessage;
-		public IEnumerable<Tuple<int, MessageDetails>> MessageHistory;
+		public Set<SavedMessageDetails> MessageHistory;
 
 		public event Action Change;
 

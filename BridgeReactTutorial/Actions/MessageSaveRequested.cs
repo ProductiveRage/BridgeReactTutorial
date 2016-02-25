@@ -1,22 +1,15 @@
-﻿using System;
-using Bridge.React;
+﻿using Bridge.React;
 using BridgeReactTutorial.API;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Actions
 {
-	public class MessageSaveRequested : IDispatcherAction
+	public class MessageSaveRequested : IDispatcherAction, IAmImmutable
 	{
 		public MessageSaveRequested(MessageDetails message)
 		{
-			if (message == null)
-				throw new ArgumentNullException("message");
-
-			Message = message;
+			this.CtorSet(_ => _.Message, message);
 		}
-
-		/// <summary>
-		/// This will never be null
-		/// </summary>
 		public MessageDetails Message { get; private set; }
 	}
 }
