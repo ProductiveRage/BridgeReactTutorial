@@ -54,7 +54,7 @@ namespace BridgeReactTutorial.API
 						500
 					);
 				},
-				1000 
+				1000
 			);
 			return requestId;
 		}
@@ -100,7 +100,10 @@ namespace BridgeReactTutorial.API
 						{
 							// The Chuck Norris Facts API (http://www.icndb.com/api/) returns strings html-encoded, so they need decoding before
 							// be wrapped up in a MessageDetails instance
-							_messages.Add(Tuple.Create(_messages.Count, new MessageDetails(title: "Fact", content: HtmlDecode(apiResponse.Value.Joke))));
+							_messages.Add(Tuple.Create(_messages.Count, new MessageDetails(
+								title: new NonBlankTrimmedString("Fact"),
+								content: new NonBlankTrimmedString(HtmlDecode(apiResponse.Value.Joke))
+							)));
 							DispatchHistoryUpdatedAction(new RequestId());
 							return;
 						}
@@ -110,7 +113,10 @@ namespace BridgeReactTutorial.API
 						// Ignore any error and drop through to the fallback message-generator below
 					}
 				}
-				_messages.Add(Tuple.Create(_messages.Count, new MessageDetails(title: "Fact", content: "API call failed when polling for server content :(")));
+				_messages.Add(Tuple.Create(_messages.Count, new MessageDetails(
+					title: new NonBlankTrimmedString("Fact"),
+					content: new NonBlankTrimmedString("API call failed when polling for server content :(")
+				)));
 				DispatchHistoryUpdatedAction(new RequestId());
 			};
 			request.Open("GET", "http://api.icndb.com/jokes/random");

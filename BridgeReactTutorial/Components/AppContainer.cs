@@ -53,7 +53,10 @@ namespace BridgeReactTutorial.Components
 						// time the form is draw, it has validation messages displayed even though the user hasn't interacted with it yet).
 						props.Dispatcher.HandleViewAction(new MessageSaveRequested
 						{
-							Message = new MessageDetails(state.NewMessage.Title.Text, state.NewMessage.Content.Text)
+							Message = new MessageDetails(
+								new NonBlankTrimmedString(state.NewMessage.Title.Text),
+								new NonBlankTrimmedString(state.NewMessage.Content.Text)
+							)
 						});
 					}
 				}),
