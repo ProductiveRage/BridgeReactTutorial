@@ -40,10 +40,6 @@ namespace BridgeReactTutorial.API
 		{
 			if (message == null)
 				throw new ArgumentNullException("message");
-			if (string.IsNullOrWhiteSpace(message.Title))
-				throw new ArgumentException("The message must have a non-null-or-whitespace-only Title value");
-			if (string.IsNullOrWhiteSpace(message.Content))
-				throw new ArgumentException("The message must have a non-null-or-whitespace-only Content value");
 
 			var requestId = new RequestId();
 			Window.SetTimeout( // Use SetTimeout to simulate a roundtrip to the server
@@ -104,7 +100,7 @@ namespace BridgeReactTutorial.API
 						{
 							// The Chuck Norris Facts API (http://www.icndb.com/api/) returns strings html-encoded, so they need decoding before
 							// be wrapped up in a MessageDetails instance
-							_messages.Add(Tuple.Create(_messages.Count, new MessageDetails { Title = "Fact", Content = HtmlDecode(apiResponse.Value.Joke) }));
+							_messages.Add(Tuple.Create(_messages.Count, new MessageDetails(title: "Fact", content: HtmlDecode(apiResponse.Value.Joke))));
 							DispatchHistoryUpdatedAction(new RequestId());
 							return;
 						}
@@ -114,7 +110,7 @@ namespace BridgeReactTutorial.API
 						// Ignore any error and drop through to the fallback message-generator below
 					}
 				}
-				_messages.Add(Tuple.Create(_messages.Count, new MessageDetails { Title = "Fact", Content = "API call failed when polling for server content :(" }));
+				_messages.Add(Tuple.Create(_messages.Count, new MessageDetails(title: "Fact", content: "API call failed when polling for server content :(")));
 				DispatchHistoryUpdatedAction(new RequestId());
 			};
 			request.Open("GET", "http://api.icndb.com/jokes/random");
