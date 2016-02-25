@@ -1,32 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using Bridge.React;
+﻿using Bridge.React;
 using BridgeReactTutorial.API;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Actions
 {
-	public class MessageHistoryUpdated : IDispatcherAction
+	public class MessageHistoryUpdated : IDispatcherAction, IAmImmutable
 	{
 
-		public MessageHistoryUpdated(RequestId requestId, IEnumerable<Tuple<int, MessageDetails>> messages)
+		public MessageHistoryUpdated(RequestId requestId, Set<SavedMessageDetails> messages)
 		{
-			if (requestId == null)
-				throw new ArgumentNullException("requestId");
-			if (messages == null)
-				throw new ArgumentNullException("messages");
-
-			RequestId = requestId;
-			Messages = messages;
+			this.CtorSet(_ => _.RequestId, requestId);
+			this.CtorSet(_ => _.Messages, messages);
 		}
-
-		/// <summary>
-		/// This will never be null
-		/// </summary>
 		public RequestId RequestId { get; private set; }
-		
-		/// <summary>
-		/// This will never be null
-		/// </summary>
-		public IEnumerable<Tuple<int, MessageDetails>> Messages { get; private set; }
+		public Set<SavedMessageDetails> Messages { get; private set; }
 	}
 }

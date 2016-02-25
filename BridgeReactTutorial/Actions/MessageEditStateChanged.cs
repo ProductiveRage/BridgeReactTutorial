@@ -1,22 +1,15 @@
-﻿using System;
-using Bridge.React;
+﻿using Bridge.React;
 using BridgeReactTutorial.ViewModels;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Actions
 {
-	public class MessageEditStateChanged : IDispatcherAction
+	public class MessageEditStateChanged : IDispatcherAction, IAmImmutable
 	{
 		public MessageEditStateChanged(MessageEditState newState)
 		{
-			if (newState == null)
-				throw new ArgumentNullException("newState");
-
-			NewState = newState;
+			this.CtorSet(_ => _.NewState, newState);
 		}
-
-		/// <summary>
-		/// This will never be null
-		/// </summary>
 		public MessageEditState NewState { get; private set; }
 	}
 }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Bridge.React;
 using BridgeReactTutorial.API;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Components
 {
@@ -17,9 +16,9 @@ namespace BridgeReactTutorial.Components
 				className = (className + " zero-messages").Trim();
 
 			var messageElements = props.Messages
-				.Select(idAndMessage => DOM.Div(new Attributes { Key = idAndMessage.Item1, ClassName = "historical-message" },
-					DOM.Span(new Attributes { ClassName = "title" }, idAndMessage.Item2.Title.Value),
-					DOM.Span(new Attributes { ClassName = "content" }, idAndMessage.Item2.Content.Value)
+				.Select(savedMessage => DOM.Div(new Attributes { Key = savedMessage.Id.ToString(), ClassName = "historical-message" },
+					DOM.Span(new Attributes { ClassName = "title" }, savedMessage.Message.Title.Value),
+					DOM.Span(new Attributes { ClassName = "content" }, savedMessage.Message.Content.Value)
 				));
 
 			return DOM.FieldSet(new FieldSetAttributes { ClassName = className },
@@ -31,7 +30,7 @@ namespace BridgeReactTutorial.Components
 		public class Props
 		{
 			public string ClassName;
-			public IEnumerable<Tuple<int, MessageDetails>> Messages;
+			public Set<SavedMessageDetails> Messages;
 		}
 	}
 }
