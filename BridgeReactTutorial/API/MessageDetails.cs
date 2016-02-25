@@ -4,25 +4,25 @@ namespace BridgeReactTutorial.API
 {
 	public class MessageDetails
 	{
-		public MessageDetails(string title, string content)
+		public MessageDetails(NonBlankTrimmedString title, NonBlankTrimmedString content)
 		{
-			if (string.IsNullOrWhiteSpace(title))
-				throw new ArgumentException("The message must have a non-null-or-whitespace-only Title value");
-			if (string.IsNullOrWhiteSpace(content))
-				throw new ArgumentException("The message must have a non-null-or-whitespace-only Content value");
+			if (title == null)
+				throw new ArgumentNullException("title");
+			if (content == null)
+				throw new ArgumentNullException("content");
 
-			Title = title.Trim();
-			Content = content.Trim();
+			Title = title;
+			Content = content;
+		}
+
+		/// <summary>
+		/// This will never be null
+		/// </summary>
+		public NonBlankTrimmedString Title { get; private set; }
+
+		/// <summary>
+		/// This will never be null
+		/// </summary>
+		public NonBlankTrimmedString Content { get; private set; }
 	}
-
-		/// <summary>
-		/// This will never be null, blank or have any leading or trailing whitespace
-		/// </summary>
-		public string Title { get; private set; }
-
-		/// <summary>
-		/// This will never be null, blank or have any leading or trailing whitespace
-		/// </summary>
-		public string Content { get; private set; }
-}
 }

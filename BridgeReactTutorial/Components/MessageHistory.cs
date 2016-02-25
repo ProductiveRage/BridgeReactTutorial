@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bridge.React;
 using BridgeReactTutorial.API;
-using BridgeReactTutorial.ViewModels;
 
 namespace BridgeReactTutorial.Components
 {
@@ -19,8 +18,8 @@ namespace BridgeReactTutorial.Components
 
 			var messageElements = props.Messages
 				.Select(idAndMessage => DOM.Div(new Attributes { Key = idAndMessage.Item1, ClassName = "historical-message" },
-					DOM.Span(new Attributes { ClassName = "title" }, idAndMessage.Item2.Title),
-					DOM.Span(new Attributes { ClassName = "content" }, idAndMessage.Item2.Content)
+					DOM.Span(new Attributes { ClassName = "title" }, idAndMessage.Item2.Title.Value),
+					DOM.Span(new Attributes { ClassName = "content" }, idAndMessage.Item2.Content.Value)
 				));
 
 			return DOM.FieldSet(new FieldSetAttributes { ClassName = className },
