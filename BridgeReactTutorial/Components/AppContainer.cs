@@ -9,7 +9,7 @@ namespace BridgeReactTutorial.Components
 {
 	public class AppContainer : Component<AppContainer.Props, Optional<AppContainer.State>>
 	{
-		public AppContainer(AppContainer.Props props) : base(props) { }
+		public AppContainer(AppUIStore store, AppDispatcher dispatcher) : base(new Props(store, dispatcher)) { }
 
 		protected override void ComponentDidMount()
 		{
@@ -37,7 +37,7 @@ namespace BridgeReactTutorial.Components
 			// A good guideline to follow with stateful components is that the State reference should contain everything required to draw the components and
 			// props should only be used to access a Dispatcher reference to deal with callbacks from those components
 			return DOM.Div(null,
-				new MessageEditor(new MessageEditor.Props(
+				new MessageEditor(
 					className: new NonBlankTrimmedString("message"),
 					message: state.Value.NewMessage,
 					onChange: newState => props.Dispatcher.HandleViewAction(new MessageEditStateChanged(newState)),
@@ -55,8 +55,8 @@ namespace BridgeReactTutorial.Components
 							)
 						));
 					}
-				)),
-				new MessageHistory(new MessageHistory.Props(className: new NonBlankTrimmedString("history"), messages: state.Value.MessageHistory))
+				),
+				new MessageHistory(className: new NonBlankTrimmedString("history"), messages: state.Value.MessageHistory)
 			);
 		}
 

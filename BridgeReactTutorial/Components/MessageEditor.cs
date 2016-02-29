@@ -8,7 +8,8 @@ namespace BridgeReactTutorial.Components
 {
 	public class MessageEditor : StatelessComponent<MessageEditor.Props>
 	{
-		public MessageEditor(Props props) : base(props) { }
+		public MessageEditor(Optional<NonBlankTrimmedString> className, MessageEditState message, Action<MessageEditState> onChange, Action onSave)
+			: base(new Props(className, message, onChange, onSave)) { }
 
 		public override ReactElement Render()
 		{
@@ -17,21 +18,21 @@ namespace BridgeReactTutorial.Components
 			return DOM.FieldSet(new FieldSetAttributes { ClassName = props.ClassName.IsDefined ? props.ClassName.Value : null },
 				DOM.Legend(null, props.Message.Caption.Value),
 				DOM.Span(new Attributes { ClassName = "label" }, "Title"),
-				new ValidatedTextInput(new ValidatedTextInput.Props(
+				new ValidatedTextInput(
 					className: new NonBlankTrimmedString("title"),
 					disabled: props.Message.IsSaveInProgress,
 					content: props.Message.Title.Text,
 					validationMessage: props.Message.Title.ValidationError,
 					onChange: newTitle => props.OnChange(props.Message.With(_ => _.Title, new TextEditState(newTitle)))
-				)),
+				),
 				DOM.Span(new Attributes { ClassName = "label" }, "Content"),
-				new ValidatedTextInput(new ValidatedTextInput.Props(
+				new ValidatedTextInput(
 					className: new NonBlankTrimmedString("content"),
 					disabled: props.Message.IsSaveInProgress,
 					content: props.Message.Content.Text,
 					validationMessage: props.Message.Content.ValidationError,
 					onChange: newContent => props.OnChange(props.Message.With(_ => _.Content, new TextEditState(newContent)))
-				)),
+				),
 				DOM.Button(
 					new ButtonAttributes { Disabled = isSaveDisabled, OnClick = e => props.OnSave() },
 					"Save"

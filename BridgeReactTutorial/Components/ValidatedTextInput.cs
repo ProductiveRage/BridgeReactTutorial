@@ -7,7 +7,8 @@ namespace BridgeReactTutorial.Components
 {
 	public class ValidatedTextInput : StatelessComponent<ValidatedTextInput.Props>
 	{
-		public ValidatedTextInput(Props props) : base(props) { }
+		public ValidatedTextInput(Optional<NonBlankTrimmedString> className, bool disabled, string content, Action<string> onChange, Optional<NonBlankTrimmedString> validationMessage)
+			: base(new Props(className, disabled, content, onChange, validationMessage)) { }
 
 		public override ReactElement Render()
 		{
