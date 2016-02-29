@@ -8,7 +8,7 @@ namespace BridgeReactTutorial.Components
 {
 	public class TextInput : StatelessComponent<TextInput.Props>
 	{
-		public TextInput(Optional<NonBlankTrimmedString> className, bool disabled, string content, Action<string> onChange)
+		public TextInput(bool disabled, string content, Action<string> onChange, Optional<NonBlankTrimmedString> className = new Optional<NonBlankTrimmedString>())
 			: base(new Props(className, disabled, content, onChange)) { }
 
 		public override ReactElement Render()
