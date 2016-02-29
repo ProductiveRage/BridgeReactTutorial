@@ -7,7 +7,7 @@ namespace BridgeReactTutorial.Components
 {
 	public class MessageHistory : StatelessComponent<MessageHistory.Props>
 	{
-		public MessageHistory(Optional<NonBlankTrimmedString> className, Set<SavedMessageDetails> messages)
+		public MessageHistory(Set<SavedMessageDetails> messages, Optional<NonBlankTrimmedString> className = new Optional<NonBlankTrimmedString>())
 			: base(new Props(className, messages)) { }
 
 		public override ReactElement Render()
