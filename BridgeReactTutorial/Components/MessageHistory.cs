@@ -11,9 +11,9 @@ namespace BridgeReactTutorial.Components
 
 		public override ReactElement Render()
 		{
-			var className = props.ClassName;
+			var className = props.ClassName.IsDefined ? props.ClassName.Value : "";
 			if (!props.Messages.Any())
-				className = (className + " zero-messages").Trim();
+				className += (className == "" ? "" : " ") + "zero-messages";
 
 			var messageElements = props.Messages
 				.Select(savedMessage => DOM.Div(new Attributes { Key = savedMessage.Id.ToString(), ClassName = "historical-message" },
@@ -21,16 +21,21 @@ namespace BridgeReactTutorial.Components
 					DOM.Span(new Attributes { ClassName = "content" }, savedMessage.Message.Content.Value)
 				));
 
-			return DOM.FieldSet(new FieldSetAttributes { ClassName = className },
+			return DOM.FieldSet(new FieldSetAttributes { ClassName = (className == "" ? null : className) },
 				DOM.Legend(null, "Message History"),
 				DOM.Div(null, messageElements.ToChildComponentArray())
 			);
 		}
 
-		public class Props
+		public class Props : IAmImmutable
 		{
-			public string ClassName;
-			public Set<SavedMessageDetails> Messages;
+			public Props(Optional<NonBlankTrimmedString> className, Set<SavedMessageDetails> messages)
+			{
+				this.CtorSet(_ => _.ClassName, className);
+				this.CtorSet(_ => _.Messages, messages);
+			}
+			public Optional<NonBlankTrimmedString> ClassName { get; private set; }
+			public Set<SavedMessageDetails> Messages { get; private set; }
 		}
 	}
 }

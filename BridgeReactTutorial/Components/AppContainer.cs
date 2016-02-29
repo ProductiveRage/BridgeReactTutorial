@@ -7,7 +7,7 @@ using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Components
 {
-	public class AppContainer : Component<AppContainer.Props, AppContainer.State>
+	public class AppContainer : Component<AppContainer.Props, Optional<AppContainer.State>>
 	{
 		public AppContainer(AppContainer.Props props) : base(props) { }
 
@@ -21,29 +21,27 @@ namespace BridgeReactTutorial.Components
 		}
 		private void StoreChanged()
 		{
-			SetState(new State
-			{
-				NewMessage = props.Store.NewMessage,
-				MessageHistory = props.Store.MessageHistory
-			});
+			SetState(new State(
+				newMessage: props.Store.NewMessage,
+				messageHistory: props.Store.MessageHistory
+			));
 		}
 
 		public override ReactElement Render()
 		{
-			// If state is null then the Store has not been initialised and its OnChange event has not been called - in this case, we are not ready to render
-			// anything and so should return null here
-			if (state == null)
+			// If state has no valueyet, then the Store has not been initialised and its OnChange event has not been called - in this case, we are not ready to
+			// render anything and so should return null here
+			if (!state.IsDefined)
 				return null;
 
 			// A good guideline to follow with stateful components is that the State reference should contain everything required to draw the components and
 			// props should only be used to access a Dispatcher reference to deal with callbacks from those components
 			return DOM.Div(null,
-				new MessageEditor(new MessageEditor.Props
-				{
-					ClassName = "message",
-					Message = state.NewMessage,
-					OnChange = newState => props.Dispatcher.HandleViewAction(new MessageEditStateChanged(newState)),
-					OnSave = () =>
+				new MessageEditor(new MessageEditor.Props(
+					className: new NonBlankTrimmedString("message"),
+					message: state.Value.NewMessage,
+					onChange: newState => props.Dispatcher.HandleViewAction(new MessageEditStateChanged(newState)),
+					onSave: () =>
 					{
 						// No validation is required here since the MessageEditor shouldn't let OnSave be called if the current message state is invalid
 						// (ie. if either field has a ValidationMessage). In some applications, it is preferred that validation messages not be shown
@@ -52,26 +50,36 @@ namespace BridgeReactTutorial.Components
 						// time the form is draw, it has validation messages displayed even though the user hasn't interacted with it yet).
 						props.Dispatcher.HandleViewAction(new MessageSaveRequested(
 							new MessageDetails(
-								new NonBlankTrimmedString(state.NewMessage.Title.Text),
-								new NonBlankTrimmedString(state.NewMessage.Content.Text)
+								new NonBlankTrimmedString(state.Value.NewMessage.Title.Text),
+								new NonBlankTrimmedString(state.Value.NewMessage.Content.Text)
 							)
 						));
 					}
-				}),
-				new MessageHistory(new MessageHistory.Props { ClassName = "history", Messages = state.MessageHistory })
+				)),
+				new MessageHistory(new MessageHistory.Props(className: new NonBlankTrimmedString("history"), messages: state.Value.MessageHistory))
 			);
 		}
 
-		public sealed class Props
+		public sealed class Props : IAmImmutable
 		{
-			public AppUIStore Store;
-			public AppDispatcher Dispatcher;
+			public Props(AppUIStore store, AppDispatcher dispatcher)
+			{
+				this.CtorSet(_ => _.Store, store);
+				this.CtorSet(_ => _.Dispatcher, dispatcher);
+			}
+			public AppUIStore Store { get; private set; }
+			public AppDispatcher Dispatcher { get; private set; }
 		}
 
-		public class State
+		public class State : IAmImmutable
 		{
-			public MessageEditState NewMessage;
-			public Set<SavedMessageDetails> MessageHistory;
+			public State(MessageEditState newMessage, Set<SavedMessageDetails> messageHistory)
+			{
+				this.CtorSet(_ => _.NewMessage, newMessage);
+				this.CtorSet(_ => _.MessageHistory, messageHistory);
+			}
+			public MessageEditState NewMessage { get; private set; }
+			public Set<SavedMessageDetails> MessageHistory { get; private set; }
 		}
 	}
 }
