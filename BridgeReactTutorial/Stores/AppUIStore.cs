@@ -26,21 +26,16 @@ namespace BridgeReactTutorial.Stores
 			{
 				message
 					.If<StoreInitialised>(action =>
-					{
-						// When it's time for a Store to be initialised (to set its initial state and call OnChange to let any interested Components know
-						// that it's ready), a StoreInitialised action will be dispatched that references the Store. In a more complicated app, a router
-						// might choose an initial Store based upon the current URL. (We don't need to do anything within this callback, we just need to
-						// match the StoreInitialised so that IfAnyMatched will fire and call OnChange).
+						{
+							// When it's time for a Store to be initialised (to set its initial state and call OnChange to let any interested Components know
+							// that it's ready), a StoreInitialised action will be dispatched that references the Store. In a more complicated app, a router
+							// might choose an initial Store based upon the current URL. (We don't need to do anything within this callback, we just need to
+							// match the StoreInitialised so that IfAnyMatched will fire and call OnChange).
 					})
-					.Else<MessageEditStateChanged>(action =>
-					{
-						var newState = action.NewState;
-						UpdateValidationFor(newState);
-						NewMessage = newState;
-					})
+					.Else<MessageEditStateChanged>(action => NewMessage = UpdateValidationFor(action.NewState))
 					.Else<MessageSaveRequested>(action =>
 					{
-						NewMessage.IsSaveInProgress = true;
+						NewMessage = NewMessage.With(_ => _.IsSaveInProgress, true);
 						_saveActionRequestId = messageApi.SaveMessage(action.Message);
 					})
 					.Else<MessageSaveSucceeded>(
@@ -64,27 +59,35 @@ namespace BridgeReactTutorial.Stores
 
 		public event Action Change;
 
-		private void UpdateValidationFor(MessageEditState messageEditState)
+		private MessageEditState UpdateValidationFor(MessageEditState messageEditState)
 		{
 			if (messageEditState == null)
 				throw new ArgumentNullException("messageEditState");
 
-			messageEditState.Caption = string.IsNullOrWhiteSpace(messageEditState.Title.Text) ? "Untitled" : messageEditState.Title.Text;
-			messageEditState.Title.ValidationError = string.IsNullOrWhiteSpace(messageEditState.Title.Text) ? "Must enter a title" : "";
-			messageEditState.Content.ValidationError = string.IsNullOrWhiteSpace(messageEditState.Content.Text) ? "Must enter message content" : "";
+			return messageEditState
+				.With(_ => _.Caption, new NonBlankTrimmedString(messageEditState.Title.Text.Trim() == "" ? "Untitled" : messageEditState.Title.Text))
+				.With(_ => _.Title, SetValidationError(messageEditState.Title, messageEditState.Title.Text.Trim() == "", "Must enter a title"))
+				.With(_ => _.Content, SetValidationError(messageEditState.Content, messageEditState.Content.Text.Trim() == "", "Must enter message content"));
+		}
+
+		private TextEditState SetValidationError(TextEditState textEditState, bool isInvalid, string ifInvalid)
+		{
+			if (textEditState == null)
+				throw new ArgumentNullException("textEditState");
+
+			return textEditState.With(_ => _.ValidationError, isInvalid ? new NonBlankTrimmedString(ifInvalid) : null);
 		}
 
 		private MessageEditState GetEmptyNewMessage()
 		{
-			var initialState = new MessageEditState
-			{
-				Caption = "Untitled",
-				Title = new TextEditState { Text = "", ValidationError = "" },
-				Content = new TextEditState { Text = "", ValidationError = "" },
-				IsSaveInProgress = false
-			};
-			UpdateValidationFor(initialState);
-			return initialState;
+			return UpdateValidationFor(
+				new MessageEditState(
+					caption: new NonBlankTrimmedString("Untitled"),
+					title: new TextEditState(""),
+					content: new TextEditState(""),
+					isSaveInProgress: false
+				)
+			);
 		}
 
 		private void OnChange()

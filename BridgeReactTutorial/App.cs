@@ -19,7 +19,7 @@ namespace BridgeReactTutorial
 			var container = Document.GetElementById("main");
 			container.ClassName = string.Join(" ", container.ClassName.Split().Where(c => c != "loading"));
 			React.Render(
-				new AppContainer(new AppContainer.Props { Store = store, Dispatcher = dispatcher }),
+				new AppContainer(new AppContainer.Props(store, dispatcher)),
 				container
 			);
 

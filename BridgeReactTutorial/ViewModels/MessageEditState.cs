@@ -1,10 +1,20 @@
-﻿namespace BridgeReactTutorial.ViewModels
+﻿using BridgeReactTutorial.API;
+using ProductiveRage.Immutable;
+
+namespace BridgeReactTutorial.ViewModels
 {
-	public class MessageEditState
+	public class MessageEditState : IAmImmutable
 	{
-		public string Caption;
-		public TextEditState Title;
-		public TextEditState Content;
-		public bool IsSaveInProgress;
+		public MessageEditState(NonBlankTrimmedString caption, TextEditState title, TextEditState content, bool isSaveInProgress)
+		{
+			this.CtorSet(_ => _.Caption, caption);
+			this.CtorSet(_ => _.Title, title);
+			this.CtorSet(_ => _.Content, content);
+			this.CtorSet(_ => _.IsSaveInProgress, isSaveInProgress);
+		}
+		public NonBlankTrimmedString Caption { get; private set; }
+		public TextEditState Title { get; private set; }
+		public TextEditState Content { get; private set; }
+		public bool IsSaveInProgress { get; private set; }
 	}
 }

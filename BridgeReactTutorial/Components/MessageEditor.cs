@@ -1,6 +1,8 @@
 ﻿using System;
 using Bridge.React;
+using BridgeReactTutorial.API;
 using BridgeReactTutorial.ViewModels;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Components
 {
@@ -10,30 +12,26 @@ namespace BridgeReactTutorial.Components
 
 		public override ReactElement Render()
 		{
-			var formIsInvalid = 
-				!string.IsNullOrWhiteSpace(props.Message.Title.ValidationError) ||
-				!string.IsNullOrWhiteSpace(props.Message.Content.ValidationError);
+			var formIsInvalid = props.Message.Title.ValidationError.IsDefined || props.Message.Content.ValidationError.IsDefined;
 			var isSaveDisabled = formIsInvalid || props.Message.IsSaveInProgress;
-			return DOM.FieldSet(new FieldSetAttributes { ClassName = props.ClassName },
-				DOM.Legend(null, props.Message.Caption),
+			return DOM.FieldSet(new FieldSetAttributes { ClassName = props.ClassName.IsDefined ? props.ClassName.Value : null },
+				DOM.Legend(null, props.Message.Caption.Value),
 				DOM.Span(new Attributes { ClassName = "label" }, "Title"),
-				new ValidatedTextInput(new ValidatedTextInput.Props
-				{
-					ClassName = "title",
-					Disabled = props.Message.IsSaveInProgress,
-					Content = props.Message.Title.Text,
-					ValidationMessage = props.Message.Title.ValidationError,
-					OnChange = ChangeMessageTitle
-				}),
+				new ValidatedTextInput(new ValidatedTextInput.Props(
+					className: new NonBlankTrimmedString("title"),
+					disabled: props.Message.IsSaveInProgress,
+					content: props.Message.Title.Text,
+					validationMessage: props.Message.Title.ValidationError,
+					onChange: newTitle => props.OnChange(props.Message.With(_ => _.Title, new TextEditState(newTitle)))
+				)),
 				DOM.Span(new Attributes { ClassName = "label" }, "Content"),
-				new ValidatedTextInput(new ValidatedTextInput.Props
-				{
-					ClassName = "content",
-					Disabled = props.Message.IsSaveInProgress,
-					Content = props.Message.Content.Text,
-					ValidationMessage = props.Message.Content.ValidationError,
-					OnChange = ChangeMessageContent
-				}),
+				new ValidatedTextInput(new ValidatedTextInput.Props(
+					className: new NonBlankTrimmedString("content"),
+					disabled: props.Message.IsSaveInProgress,
+					content: props.Message.Content.Text,
+					validationMessage: props.Message.Content.ValidationError,
+					onChange: newContent => props.OnChange(props.Message.With(_ => _.Content, new TextEditState(newContent)))
+				)),
 				DOM.Button(
 					new ButtonAttributes { Disabled = isSaveDisabled, OnClick = e => props.OnSave() },
 					"Save"
@@ -41,34 +39,19 @@ namespace BridgeReactTutorial.Components
 			);
 		}
 
-		private void ChangeMessageTitle(string newTitle)
+		public class Props : IAmImmutable
 		{
-			props.OnChange(new MessageEditState
+			public Props(Optional<NonBlankTrimmedString> className, MessageEditState message, Action<MessageEditState> onChange, Action onSave)
 			{
-				Caption = props.Message.Caption,
-				Title = new TextEditState { Text = newTitle },
-				Content = props.Message.Content,
-				IsSaveInProgress = props.Message.IsSaveInProgress
-			});
-		}
-
-		private void ChangeMessageContent(string newContent)
-		{
-			props.OnChange(new MessageEditState
-			{
-				Caption = props.Message.Caption,
-				Title = props.Message.Title,
-				Content = new TextEditState { Text = newContent },
-				IsSaveInProgress = props.Message.IsSaveInProgress
-			});
-		}
-
-		public class Props
-		{
-			public string ClassName;
-			public MessageEditState Message;
-			public Action<MessageEditState> OnChange;
-			public Action OnSave;
+				this.CtorSet(_ => _.ClassName, className);
+				this.CtorSet(_ => _.Message, message);
+				this.CtorSet(_ => _.OnChange, onChange);
+				this.CtorSet(_ => _.OnSave, onSave);
+			}
+			public Optional<NonBlankTrimmedString> ClassName { get; private set; }
+			public MessageEditState Message { get; private set; }
+			public Action<MessageEditState> OnChange { get; private set; }
+			public Action OnSave { get; private set; }
 		}
 	}
 }

@@ -1,4 +1,7 @@
-﻿using Bridge.React;
+﻿using System;
+using Bridge.React;
+using BridgeReactTutorial.API;
+using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Components
 {
@@ -8,21 +11,30 @@ namespace BridgeReactTutorial.Components
 
 		public override ReactElement Render()
 		{
-			var className = props.ClassName;
-			if (!string.IsNullOrWhiteSpace(props.ValidationMessage))
-				className = (className + " invalid").Trim();
+			var className = props.ClassName.IsDefined ? props.ClassName.Value : "";
+			ReactElement validationMessageIfAny;
+			if (props.ValidationMessage.IsDefined)
+			{
+				className += (className == "" ? "" : " ") + "invalid";
+				validationMessageIfAny = DOM.Span(new Attributes { ClassName = "validation-message" }, props.ValidationMessage.Value);
+			}
+			else
+				validationMessageIfAny = null;
 
 			return DOM.Span(new Attributes { ClassName = className },
-				new TextInput(props),
-				!string.IsNullOrWhiteSpace(props.ValidationMessage)
-					? DOM.Span(new Attributes { ClassName = "validation-message" }, props.ValidationMessage)
-					: null
+				new TextInput(props.ClassName, props.Disabled, props.Content, props.OnChange),
+				validationMessageIfAny
 			);
 		}
 
-		public class Props : TextInput.Props
+		public class Props : TextInput.Props, IAmImmutable
 		{
-			public string ValidationMessage;
+			public Props(Optional<NonBlankTrimmedString> className, bool disabled, string content, Action<string> onChange, Optional<NonBlankTrimmedString> validationMessage)
+				: base(className, disabled, content, onChange)
+			{
+				this.CtorSet(_ => _.ValidationMessage, validationMessage);
+			}
+			public Optional<NonBlankTrimmedString> ValidationMessage { get; private set; }
 		}
 	}
 }
