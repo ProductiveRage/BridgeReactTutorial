@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Bridge.Html5;
 using Bridge.React;
 using BridgeReactTutorial.API;
 using ProductiveRage.Immutable;
@@ -13,11 +12,6 @@ namespace BridgeReactTutorial.Components
 
 		public override ReactElement Render()
 		{
-			// This line is only here to illustrate the effect of deriving from PureComponent - this Render method will only be executed if the
-			// component needs to re-render; if the new props reference has the same data as the previous props then Render won't be called at
-			// all (this is handled automatically by the PureComponent base class)
-			Console.WriteLine("MessageHistory.Render..");
-
 			var className = props.ClassName.IsDefined ? props.ClassName.Value : "";
 			if (!props.Messages.Any())
 				className += (className == "" ? "" : " ") + "zero-messages";
