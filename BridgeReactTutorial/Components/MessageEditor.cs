@@ -6,7 +6,7 @@ using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Components
 {
-	public class MessageEditor : StatelessComponent<MessageEditor.Props>
+	public class MessageEditor : PureComponent<MessageEditor.Props>
 	{
 		public MessageEditor(Optional<NonBlankTrimmedString> className, MessageEditState message, Action<MessageEditState> onChange, Action onSave)
 			: base(new Props(className, message, onChange, onSave)) { }

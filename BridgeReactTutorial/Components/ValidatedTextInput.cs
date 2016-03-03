@@ -5,7 +5,7 @@ using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Components
 {
-	public class ValidatedTextInput : StatelessComponent<ValidatedTextInput.Props>
+	public class ValidatedTextInput : PureComponent<ValidatedTextInput.Props>
 	{
 		public ValidatedTextInput(
 			bool disabled,
