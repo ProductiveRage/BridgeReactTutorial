@@ -25,13 +25,16 @@ namespace BridgeReactTutorial.Stores
 			dispatcher.Register(message =>
 			{
 				message
-					.If<StoreInitialised>(action =>
+					.If<StoreInitialised>(
+						condition: action => action.Store == this,
+						work: action =>
 						{
 							// When it's time for a Store to be initialised (to set its initial state and call OnChange to let any interested Components know
 							// that it's ready), a StoreInitialised action will be dispatched that references the Store. In a more complicated app, a router
 							// might choose an initial Store based upon the current URL. (We don't need to do anything within this callback, we just need to
 							// match the StoreInitialised so that IfAnyMatched will fire and call OnChange).
-					})
+						}
+					)
 					.Else<MessageEditStateChanged>(action => NewMessage = UpdateValidationFor(action.NewState))
 					.Else<MessageSaveRequested>(action =>
 					{
