@@ -4,7 +4,7 @@ using Bridge.React;
 
 namespace BridgeReactTutorial.API
 {
-	public class NonBlankTrimmedString
+	public sealed class NonBlankTrimmedString
 	{
 		public NonBlankTrimmedString(string value)
 		{
@@ -18,6 +18,22 @@ namespace BridgeReactTutorial.API
 		/// This will never be null, blank or have any leading or trailing whitespace
 		/// </summary>
 		public string Value { get; private set; }
+
+		public override bool Equals(object o)
+		{
+			// Note: Implementing "Equals" on a sealed class is much easier than it would be otherwise because there are no worries about
+			// what different behaviour or additional data any sub classes could introduce
+			var otherNonBlankTrimmedString = o as NonBlankTrimmedString;
+			if (otherNonBlankTrimmedString == null)
+				return false;
+
+			return otherNonBlankTrimmedString.Value == Value;
+		}
+
+		public override int GetHashCode()
+		{
+			return Value.GetHashCode();
+		}
 
 		/// <summary>
 		/// It's convenient to be able to pass a NonBlankTrimmedString instance as any argument that requires a string

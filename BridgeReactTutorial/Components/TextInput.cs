@@ -6,7 +6,7 @@ using ProductiveRage.Immutable;
 
 namespace BridgeReactTutorial.Components
 {
-	public class TextInput : StatelessComponent<TextInput.Props>
+	public class TextInput : PureComponent<TextInput.Props>
 	{
 		public TextInput(bool disabled, string content, Action<string> onChange, Optional<NonBlankTrimmedString> className = new Optional<NonBlankTrimmedString>())
 			: base(new Props(className, disabled, content, onChange)) { }
