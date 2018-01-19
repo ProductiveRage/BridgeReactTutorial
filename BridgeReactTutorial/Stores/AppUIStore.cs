@@ -93,8 +93,7 @@ namespace BridgeReactTutorial.Stores
 
 		private void OnChange()
 		{
-			if (Change != null)
-				Change();
+			Change?.Invoke();
 		}
 	}
 }
