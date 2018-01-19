@@ -40,7 +40,7 @@ namespace BridgeReactTutorial.Components
 				new MessageEditor(
 					className: new NonBlankTrimmedString("message"),
 					message: state.Value.NewMessage,
-					onChange: newState => props.Dispatcher.HandleViewAction(new MessageEditStateChanged(newState)),
+					onChange: newState => props.Dispatcher.Dispatch(new MessageEditStateChanged(newState)),
 					onSave: () =>
 					{
 						// No validation is required here since the MessageEditor shouldn't let OnSave be called if the current message state is invalid
@@ -48,7 +48,7 @@ namespace BridgeReactTutorial.Components
 						// until a save request is attempted (in which case some additional validation WOULD be performed here), but this app keeps
 						// things simpler by showing validation messages for all inputs until they have acceptable values (meaning that the first
 						// time the form is draw, it has validation messages displayed even though the user hasn't interacted with it yet).
-						props.Dispatcher.HandleViewAction(new MessageSaveRequested(
+						props.Dispatcher.Dispatch(new MessageSaveRequested(
 							new MessageDetails(
 								new NonBlankTrimmedString(state.Value.NewMessage.Title.Text),
 								new NonBlankTrimmedString(state.Value.NewMessage.Content.Text)
@@ -73,13 +73,13 @@ namespace BridgeReactTutorial.Components
 
 		public class State : IAmImmutable
 		{
-			public State(MessageEditState newMessage, Set<SavedMessageDetails> messageHistory)
+			public State(MessageEditState newMessage, NonNullList<SavedMessageDetails> messageHistory)
 			{
 				this.CtorSet(_ => _.NewMessage, newMessage);
 				this.CtorSet(_ => _.MessageHistory, messageHistory);
 			}
 			public MessageEditState NewMessage { get; private set; }
-			public Set<SavedMessageDetails> MessageHistory { get; private set; }
+			public NonNullList<SavedMessageDetails> MessageHistory { get; private set; }
 		}
 	}
 }

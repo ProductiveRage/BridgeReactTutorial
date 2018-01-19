@@ -7,7 +7,7 @@ namespace BridgeReactTutorial.Components
 {
 	public class MessageHistory : PureComponent<MessageHistory.Props>
 	{
-		public MessageHistory(Set<SavedMessageDetails> messages, Optional<NonBlankTrimmedString> className = new Optional<NonBlankTrimmedString>())
+		public MessageHistory(NonNullList<SavedMessageDetails> messages, Optional<NonBlankTrimmedString> className = new Optional<NonBlankTrimmedString>())
 			: base(new Props(className, messages)) { }
 
 		public override ReactElement Render()
@@ -24,19 +24,19 @@ namespace BridgeReactTutorial.Components
 
 			return DOM.FieldSet(new FieldSetAttributes { ClassName = (className == "" ? null : className) },
 				DOM.Legend(null, "Message History"),
-				DOM.Div(null, messageElements.ToChildComponentArray())
+				DOM.Div(messageElements)
 			);
 		}
 
 		public class Props : IAmImmutable
 		{
-			public Props(Optional<NonBlankTrimmedString> className, Set<SavedMessageDetails> messages)
+			public Props(Optional<NonBlankTrimmedString> className, NonNullList<SavedMessageDetails> messages)
 			{
 				this.CtorSet(_ => _.ClassName, className);
 				this.CtorSet(_ => _.Messages, messages);
 			}
 			public Optional<NonBlankTrimmedString> ClassName { get; private set; }
-			public Set<SavedMessageDetails> Messages { get; private set; }
+			public NonNullList<SavedMessageDetails> Messages { get; private set; }
 		}
 	}
 }
