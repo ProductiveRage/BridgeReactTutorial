@@ -50,6 +50,6 @@
     "autoProperty": "Plain",
     "boxing": "Managed",
     "integer": "Managed",
-    "lambda": "Plain"
+    "lambda": "Managed"
   }
 }
