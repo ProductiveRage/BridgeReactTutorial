@@ -14,14 +14,14 @@ namespace BridgeReactTutorial.API
 	public class MessageApi : IReadAndWriteMessages
 	{
 		private readonly AppDispatcher _dispatcher;
-		private Set<SavedMessageDetails> _messages;
+		private NonNullList<SavedMessageDetails> _messages;
 		public MessageApi(AppDispatcher dispatcher)
 		{
 			if (dispatcher == null)
 				throw new ArgumentNullException("dispatcher");
 
 			_dispatcher = dispatcher;
-			_messages = Set<SavedMessageDetails>.Empty;
+			_messages = NonNullList<SavedMessageDetails>.Empty;
 
 			// To further mimic a server-based API (where other people may be recording messages of their own), after a 10s delay a periodic task will be
 			// executed to retrieve a new message
@@ -46,7 +46,7 @@ namespace BridgeReactTutorial.API
 				() =>
 				{
 					_messages = _messages.Add(new SavedMessageDetails(_messages.Count, message));
-					_dispatcher.HandleServerAction(new MessageSaveSucceeded(requestId));
+					_dispatcher.Dispatch(new MessageSaveSucceeded(requestId));
 					Window.SetTimeout(
 						() => DispatchHistoryUpdatedAction(requestId),
 						500
@@ -75,7 +75,7 @@ namespace BridgeReactTutorial.API
 			// ToArray is used to return a clone of the message set - otherwise, the caller would end up with a list that is updated when the internal
 			// reference within this class is updated (which sounds convenient but it's not the behaviour that would be exhibited if this was "API"
 			// was really persisting messages to a server somewhere)
-			_dispatcher.HandleServerAction(new MessageHistoryUpdated(requestId, _messages));
+			_dispatcher.Dispatch(new MessageHistoryUpdated(requestId, _messages));
 		}
 
 		private void GetChuckNorrisFact()

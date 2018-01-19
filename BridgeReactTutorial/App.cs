@@ -27,7 +27,7 @@ namespace BridgeReactTutorial
 			// it's time to set its initial state, so that the Component can receive an OnChange event and draw itself accordingly. In a more
 			// complicated app, this would probably be an event fired by the router - initialising the Store appropriate to the current URL,
 			// but in this case there's only a single Store to initialise.
-			dispatcher.HandleViewAction(new StoreInitialised(store));
+			dispatcher.Dispatch(new StoreInitialised(store));
 		}
 	}
 }
