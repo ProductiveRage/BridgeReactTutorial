@@ -80,8 +80,10 @@ namespace BridgeReactTutorial.API
 
 		private void GetChuckNorrisFact()
 		{
-			var request = new XMLHttpRequest();
-			request.ResponseType = XMLHttpRequestResponseType.Json;
+			var request = new XMLHttpRequest
+			{
+				ResponseType = XMLHttpRequestResponseType.Json
+			};
 			request.OnReadyStateChange = () =>
 			{
 				if (request.ReadyState != AjaxReadyState.Done)
